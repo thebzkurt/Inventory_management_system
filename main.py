@@ -1,13 +1,15 @@
-from random import choice
+from datetime import datetime
 
+ekleme = 0
 
 class Inventory:
     total_item = 0
 
-    def __init__(self, product_name, price, quantity):
+    def __init__(self, product_name, price, quantity, product_expiration_date):
         self.product_name = product_name
         self.price = price
         self.quantity = quantity
+        self.product_expiration_date = product_expiration_date
         Inventory.total_item += quantity
 
     def show_product_details(self):
@@ -15,6 +17,7 @@ class Inventory:
         print(f"Product name: {self.product_name}")
         print(f"Price: {self.price}")
         print(f"Quantity: {self.quantity}")
+        print(f"Expiration Date: {self.product_expiration_date}")
 
     def sell_product(self, amount):
         if amount <= self.quantity:
@@ -34,11 +37,29 @@ class Inventory:
 
 products = []
 
+def get_date_input(prompt):
+    while True:
+        date_str = input(prompt)
+        try:
+            date_obj = datetime.strptime(date_str, "%d/%m/%Y")
+            return date_obj.strftime("%d/%m/%Y")
+        except ValueError:
+            print("Please enter the date in DD/MM/YYYY format: ")
+
 def add_product():
+    product_perishable_check = input("Can the product perishable: (Y/N)").strip()
+    if product_perishable_check.lower() == "y":
+        product_expiration_date = get_date_input("The product expiration date (DD/MM/YYYY):")
+    elif product_perishable_check.lower() == "n":
+        product_expiration_date = "N/A"
+    else:
+        print("Invalid input. Please enter Y or N.")
+        return
+
     product_name = input("Enter product name: ")
     price = float(input("Enter price: "))
     quantity = int(input("Enter quantity: "))
-    product = Inventory(product_name, price, quantity)
+    product = Inventory(product_name, price, quantity, product_expiration_date)
     products.append(product)
     print(f"{quantity} {product_name} added to inventory.")
 
