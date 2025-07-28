@@ -1,6 +1,8 @@
-from datetime import datetime
 
-ekleme = 0
+from datetime import datetime
+import csv
+
+
 
 class Inventory:
     total_item = 0
@@ -36,6 +38,33 @@ class Inventory:
         print(f"\nTotal item: {cls.total_item}")
 
 products = []
+CSV_FILE = 'data.csv'
+
+def load_products_csv(file):
+    with open(file, 'r', newline='') as fl:
+        reader = csv.reader(fl)
+        next(reader)
+        for row in reader:
+            if row:
+                product_name = row[0]
+                price = float(row[1])
+                quantile = int(row[2])
+                product_expiration_date = row[3]
+                product = Inventory(product_name,
+                                    price,
+                                    quantile,
+                                    product_expiration_date)
+                products.append(product)
+
+def csv_save(file):
+    with open(file, 'w', newline='') as fl:
+        writer = csv.writer(fl)
+        writer.writerow(['Product name', 'Price', 'Quantity', 'Expiration Date'])
+        for item_data in products:
+            writer.writerow([item_data.product_name,
+                             item_data.price,
+                             item_data.quantity,
+                             item_data.product_expiration_date])
 
 def get_date_input(prompt):
     while True:
@@ -87,6 +116,7 @@ def discount_price():
     discounted_price = Inventory.calculate_discount(price, discount_percentage)
     print(f"Discount Price {discounted_price}")
 
+load_products_csv(CSV_FILE)
 while True:
     print("\n--- Inventory Management System ---")
     print("1. Add Product")
@@ -100,10 +130,12 @@ while True:
 
     if choice == "1":
         add_product()
+        csv_save(CSV_FILE)
     elif choice == "2":
         view_product()
     elif choice == "3":
         sell_product()
+        csv_save(CSV_FILE)
     elif choice == "4":
         discount_price()
     elif choice == "5":
